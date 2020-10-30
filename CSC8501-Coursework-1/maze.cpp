@@ -45,7 +45,7 @@ Maze::~Maze() {
 	for (int i = 0; i < maze_x_size + 1; i++) {
 		delete[] maze[i];
 	}
-
+	delete[] maze;
 }
 
 void Maze::fill_maze() {
@@ -57,9 +57,6 @@ void Maze::fill_maze() {
 }
 
 void Maze::generate_maze() {
-	// Place the exit and start cells dentored by E and S respectively
-	// Start: (x/2, y/2)
-	// Exit: (0, y) or (x, 0)
 	// Use the depth first algorithm to generate the maze
 	// Start from the centre cell and continually branch out until maze is completed.
 	// Maze walls will be denoted by X
@@ -105,15 +102,36 @@ void Maze::place_exit(int num_exits) {
 
 		// Make sure the exits are not in the corners otherwise there is no valid path
 		if ((x_C == 0 && y_C == 0) || (x_C == 0 && y_C == maze_y_size)) {
-			maze[x_C + 1][y_C] == 'E' ? i -= 1 : maze[x_C + 1][y_C] = 'E';
+			if (maze[x_C + 1][y_C] == 'E') {
+				i -= 1;
+			}
+
+			else {
+				maze[x_C + 1][y_C] = 'E';
+				exit_vector.emplace_back(create_exit_cell(x_C + 1, y_C));
+			}
 		}		
 
 		else if ((x_C == maze_x_size && y_C == 0) || (x_C == maze_x_size && y_C == maze_y_size)) {
-			maze[x_C - 1][y_C] == 'E' ? i -= 1 : maze[x_C + 1][y_C] = 'E';
+			if (maze[x_C - 1][y_C] == 'E') {
+				i -= 1;
+			}
+
+			else {
+				maze[x_C - 1][y_C] = 'E';
+				exit_vector.emplace_back(create_exit_cell(x_C - 1, y_C));
+			}
 		}
 
 		else {
-			maze[x_C][y_C] == 'E' ? i -= 1 : maze[x_C][y_C] = 'E';
+			if (maze[x_C][y_C] == 'E') {
+				i -= 1;
+			}
+
+			else {
+				maze[x_C][y_C] = 'E';
+				exit_vector.emplace_back(create_exit_cell(x_C, y_C));
+			}
 		}
 
 	}
@@ -121,10 +139,20 @@ void Maze::place_exit(int num_exits) {
 
 void Maze::place_start(int startx, int starty) {
 	maze[startx][starty] = 'S';
+	starting_cell.x = startx;
+	starting_cell.y = starty;
 }
 
 int Maze::generate_random_number(int upper_limit, int lower_limit) {
 	return(rand() % upper_limit + lower_limit);
+}
+
+Cell Maze::create_exit_cell(int x, int y) {
+	Cell exit_cell;
+	exit_cell.x = x;
+	exit_cell.y = y;
+
+	return exit_cell;
 }
 
 int main() {

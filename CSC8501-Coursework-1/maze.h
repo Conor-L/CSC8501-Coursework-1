@@ -1,6 +1,9 @@
 #pragma once
+#include <vector>
 
-class Maze {
+struct Cell { int x; int y; };
+
+class Maze {	
 	public:
 		Maze();
 		Maze(int dim_x, int dim_y, int num_exits); // Parameterised Constructor where the user can provide the information needed
@@ -12,6 +15,7 @@ class Maze {
 
 		void place_exit(int num_exits);
 		void place_start(int startx, int starty);
+		Cell create_exit_cell(int x, int y);
 		int generate_random_number(int upper_limit, int lower_limit);
 
 	private:
@@ -19,5 +23,8 @@ class Maze {
 		int maze_x_size = 0;
 		int maze_y_size = 0;
 		int num_exits = 1;
+
+		Cell starting_cell;
+		std::vector<Cell> exit_vector;
 
 };
