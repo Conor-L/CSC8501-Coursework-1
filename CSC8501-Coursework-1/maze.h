@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-struct Cell { int x; int y; };
+struct Cell { int x; int y; bool visited = false; };
 
 class Maze {	
 	public:
@@ -11,6 +11,7 @@ class Maze {
 
 		void fill_maze();
 		void generate_maze();
+		void move_cell(Cell current_cell);
 		void print_maze();
 
 		void place_exit(int num_exits);

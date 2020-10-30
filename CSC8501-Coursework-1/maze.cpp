@@ -17,7 +17,6 @@ Maze::Maze() {
 
 	place_exit(num_exits);
 	place_start(maze_x_size / 2, maze_y_size / 2);
-	
 
 }
 
@@ -57,9 +56,19 @@ void Maze::fill_maze() {
 }
 
 void Maze::generate_maze() {
-	// Use the depth first algorithm to generate the maze
-	// Start from the centre cell and continually branch out until maze is completed.
-	// Maze walls will be denoted by X
+	/*
+	
+		Given a current cell as a parameter,
+		Mark the current cell as visited
+		While the current cell has any unvisited neighbour cells
+			Choose one of the unvisited neighbours
+			Remove the wall between the current cell and the chosen cell
+			Invoke the routine recursively for a chosen cell
+	
+	*/
+}
+
+void Maze::move_cell(Cell current_cell) {
 }
 
 void Maze::print_maze() {
