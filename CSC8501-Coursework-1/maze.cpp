@@ -1,6 +1,7 @@
 #include <iostream>
 #include <time.h>
 #include "maze.h"
+#include <stack>
 
 using namespace std;
 Maze::Maze() {
@@ -15,7 +16,7 @@ Maze::Maze() {
 	maze_y_size = 34;
 	fill_maze();
 
-	place_exit(num_exits);
+	//place_exit(num_exits);
 	place_start(maze_x_size / 2, maze_y_size / 2);
 
 	set_neighbours();
@@ -36,10 +37,11 @@ Maze::Maze(int dim_x, int dim_y, int num_exits) {
 
 	fill_maze();
 
-	place_exit(num_exits);
+	//place_exit(num_exits);
 	place_start(maze_x_size / 2, maze_y_size / 2);
 
 	set_neighbours();
+	generate_maze(*starting_cell);
 
 }
 	
@@ -57,6 +59,22 @@ void Maze::fill_maze() {
 			maze[i][j].value = 'X';
 			maze[i][j].x = i;
 			maze[i][j].y = j;
+			
+		}
+	}
+
+	// Make sure the walls are actually registered as walls
+	for (int i = 0; i < (maze_x_size + 1); i++) {
+		for (int j = 0; j < (maze_y_size + 1); j++) {
+
+			if ((j == 0) || (j == maze_y_size)) {
+				maze[i][j].isWall = true;
+			}
+
+			else if ((i == 0) || (i == maze_x_size)) {
+				maze[i][j].isWall = true;
+			}
+
 		}
 	}
 }
@@ -87,20 +105,88 @@ void Maze::set_neighbours() {
 	}
 }
 
-void Maze::generate_maze() {
-	/*
+void Maze::generate_maze(Cell c) {
+	Cell* initial_cell = &maze[c.x][c.y];
+	stack<Cell*> path_stack;
+
+	initial_cell->visited = true;
+	path_stack.push(initial_cell);
 	
-		Given a current cell as a parameter,
-		Mark the current cell as visited
-		While the current cell has any unvisited neighbour cells
-			Choose one of the unvisited neighbours
-			Remove the wall between the current cell and the chosen cell
-			Invoke the routine recursively for a chosen cell
+	while (!path_stack.empty()) {
+		Cell* current_cell = path_stack.top();
+		path_stack.pop();
+		vector<Cell*> available_neighbours;
+
+		if (!check_space(*current_cell)) {
+			available_neighbours = get_neighbours(*current_cell);
+		}
+
+		while (!available_neighbours.empty()) {
+				int random = rand() % available_neighbours.size();				
+				Cell* next_cell = available_neighbours.at(random);
+				// check space
+				if (!check_space(*next_cell)) {
+					path_stack.push(current_cell);
+					next_cell->value = ' '; next_cell->visited = true;
+					path_stack.push(next_cell);
+					//break;
+				}
+				available_neighbours.erase(available_neighbours.begin() + random);				
+		}
+	}
 	
-	*/
 }
 
-void Maze::move_cell(Cell current_cell) {
+vector<Cell*> Maze::get_neighbours(Cell current) {
+	vector<Cell*> available_neighbours;
+	
+	if ((current.up_neighbour->visited == false) && (current.up_neighbour->isWall == false)) {
+		available_neighbours.emplace_back(maze[current.x][current.y].up_neighbour);
+	}
+	
+	if ((current.down_neighbour->visited == false) && (current.down_neighbour->isWall == false)) {
+		available_neighbours.emplace_back(maze[current.x][current.y].down_neighbour);
+	}
+
+	if ((current.right_neighbour->visited == false) && (current.right_neighbour->isWall == false)) {
+		available_neighbours.emplace_back(maze[current.x][current.y].right_neighbour);
+	}
+	
+	if ((current.left_neighbour->visited == false) && (current.left_neighbour->isWall == false)) {
+		available_neighbours.emplace_back(maze[current.x][current.y].left_neighbour);
+	}
+	
+	return available_neighbours;
+
+}
+
+bool Maze::check_space(Cell check) {
+	int space_count = 0;
+
+	if (check.up_neighbour->visited == true) {
+		space_count++;
+	}
+
+	if (check.down_neighbour->visited == true || check.down_neighbour->isWall == true) {
+		space_count++;
+	}
+
+	if (check.left_neighbour->visited == true || check.left_neighbour->isWall == true) {
+		space_count++;
+	}
+
+	if (check.right_neighbour->visited == true || check.right_neighbour->isWall == true) {
+		space_count++;
+	}
+
+	if (check.up_neighbour->isWall == true || check.down_neighbour->isWall == true || check.left_neighbour->isWall == true || check.right_neighbour->isWall == true) {
+		return (space_count > 2 ? true : false);
+	}
+
+	else {
+		return (space_count > 1 ? true : false);
+	}
+
 }
 
 void Maze::print_maze() {
@@ -180,8 +266,7 @@ void Maze::place_exit(int num_exits) {
 
 void Maze::place_start(int startx, int starty) {
 	maze[startx][starty].value = 'S';
-	starting_cell.x = startx;
-	starting_cell.y = starty;
+	starting_cell = &maze[startx][starty];
 }
 
 int Maze::generate_random_number(int upper_limit, int lower_limit) {
@@ -200,7 +285,7 @@ int main() {
 	//Maze* test_maze = new Maze();
 	//test_maze->print_maze();
 
-	Maze* test_parameter_maze = new Maze(15, 15, 3);
+	Maze* test_parameter_maze = new Maze(12, 35, 3);
 	test_parameter_maze->print_maze();
 	return 0;
 }

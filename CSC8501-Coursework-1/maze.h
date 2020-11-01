@@ -21,8 +21,9 @@ class Maze {
 
 		void fill_maze();
 		void set_neighbours();
-		void generate_maze();
-		void move_cell(Cell current_cell);
+		void generate_maze(Cell initial);
+		std::vector<Cell*> get_neighbours(Cell current_cell);
+		bool check_space(Cell cell_to_check);
 		void print_maze();
 
 		void place_exit(int num_exits);
@@ -36,7 +37,7 @@ class Maze {
 		int maze_y_size = 0;
 		int num_exits = 1;
 
-		Cell starting_cell;
+		Cell* starting_cell;
 		std::vector<Cell> exit_vector;
 
 };
