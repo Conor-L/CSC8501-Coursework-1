@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <fstream>
+#include <string>
 
 struct Cell { 
 	char value = ' '; 
@@ -33,7 +34,7 @@ class Maze {
 		int generate_random_number(int upper_limit, int lower_limit);
 
 		void save_maze(Maze* maze, std::string filename);
-		void load_maze(std::string filename);
+		Maze* load_maze(std::string filename);
 
 	private:
 		Cell** maze;

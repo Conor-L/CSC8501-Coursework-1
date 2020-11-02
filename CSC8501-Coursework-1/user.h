@@ -8,7 +8,7 @@ class User : public Maze {
 
 		Maze* generate_maze(int height, int width, int exits);
 		void save_maze(Maze* maze, std::string filename);
-		void load_maze();
+		void load_maze(Maze* maze, std::string filename);
 
 		std::string get_username() { return username; }
 
