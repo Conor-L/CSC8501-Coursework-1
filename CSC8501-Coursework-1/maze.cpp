@@ -20,7 +20,7 @@ Maze::Maze() {
 	place_start(maze_x_size / 2, maze_y_size / 2);
 
 	set_neighbours();
-
+	generate_maze(*starting_cell);
 }
 
 Maze::Maze(int dim_x, int dim_y, int num_exits) {
@@ -129,7 +129,6 @@ void Maze::generate_maze(Cell c) {
 					path_stack.push(current_cell);
 					next_cell->value = ' '; next_cell->visited = true;
 					path_stack.push(next_cell);
-					//break;
 				}
 				available_neighbours.erase(available_neighbours.begin() + random);				
 		}
@@ -281,11 +280,29 @@ Cell Maze::create_exit_cell(int x, int y) {
 	return exit_cell;
 }
 
-int main() {
-	//Maze* test_maze = new Maze();
-	//test_maze->print_maze();
+void Maze::save_maze(Maze* maze, string filename) {
+	ofstream stream;
 
-	Maze* test_parameter_maze = new Maze(12, 35, 3);
-	test_parameter_maze->print_maze();
-	return 0;
+	stream.open(filename + ".txt");
+	if (!stream) {
+		cout << "There was an issue opening this file." << endl;
+	}
+
+	for (int i = 0; i < (maze->maze_x_size + 1); i++) {
+		for (int j = 0; j < (maze->maze_y_size + 1); j++) {
+			stream << maze->maze[i][j].value;
+		}
+		stream << endl;
+	}
+
+	if (!stream) {
+		cout << "There was an issue writing to this file." << endl;
+	}
+
+	stream.close();
+
+}
+
+void Maze::load_maze(string filename) {
+
 }
