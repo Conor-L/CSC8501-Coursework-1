@@ -21,6 +21,7 @@ Maze::Maze() {
 
 	set_neighbours();
 	generate_maze(*starting_cell);
+	generate_maze_centre();
 }
 
 Maze::Maze(int dim_x, int dim_y, int num_exits) {
@@ -42,6 +43,7 @@ Maze::Maze(int dim_x, int dim_y, int num_exits) {
 
 	set_neighbours();
 	generate_maze(*starting_cell);
+	generate_maze_centre();
 
 }
 	
@@ -184,6 +186,33 @@ bool Maze::check_space(Cell check) {
 
 	else {
 		return (space_count > 1 ? true : false);
+	}
+
+}
+
+void Maze::generate_maze_centre() {
+	// Delete a 3 by 3 around the starting cell
+	int startx = starting_cell->x;
+	int starty = starting_cell->y;
+
+	// Top 5 cells
+
+	for (int i = starty - 2; i < starty + 3; i++) {
+		maze[startx - 1][i].value = ' '; maze[startx - 1][i].visited = true;
+	}
+
+	// middle 5 cells
+	for (int i = starty - 2; i < starty + 3; i++) {
+		if (i == starty) {
+			continue; // ignore starting cell
+		}
+
+		maze[startx][i].value = ' '; maze[startx - 1][i].visited = true;
+	}
+
+	// bottom 5 cells
+	for (int i = starty - 2; i < starty + 3; i++) {
+		maze[startx + 1][i].value = ' '; maze[startx - 1][i].visited = true;
 	}
 
 }

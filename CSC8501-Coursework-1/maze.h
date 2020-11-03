@@ -26,6 +26,7 @@ class Maze {
 		void generate_maze(Cell initial);
 		std::vector<Cell*> get_neighbours(Cell current_cell);
 		bool check_space(Cell cell_to_check);
+		void generate_maze_centre();
 		void print_maze();
 
 		void place_exit(int num_exits);
