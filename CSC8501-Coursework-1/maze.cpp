@@ -14,14 +14,15 @@ Maze::Maze() {
 
 	maze_x_size = 11;
 	maze_y_size = 34;
+
 	fill_maze();
-
-	//place_exit(num_exits);
 	place_start(maze_x_size / 2, maze_y_size / 2);
-
 	set_neighbours();
+
 	generate_maze(*starting_cell);
 	generate_maze_centre();
+	place_exit(num_exits);
+
 }
 
 Maze::Maze(int dim_x, int dim_y, int num_exits) {
@@ -36,14 +37,13 @@ Maze::Maze(int dim_x, int dim_y, int num_exits) {
 		maze[i] = new Cell[dim_y];
 	}
 
-	fill_maze();
-
-	//place_exit(num_exits);
+	fill_maze();	
 	place_start(maze_x_size / 2, maze_y_size / 2);
 
 	set_neighbours();
 	generate_maze(*starting_cell);
 	generate_maze_centre();
+	place_exit(num_exits);
 
 }
 	
@@ -228,68 +228,59 @@ void Maze::print_maze() {
 }
 
 void Maze::place_exit(int num_exits) {
-	for (int i = 0; i < num_exits; i++) {
-		int side = generate_random_number(4, 0);
-		int x_C;
-		int y_C;
+	// The exits should be placed somewhere that makes sense after the maze is generated.
+	vector<Cell*> possible_exit_positions; // Before Neighbour Check
+	vector<Cell*> confirmed_exit_positions; // After Neighbour Check
+	
+	for (int i = 0; i < maze_x_size + 1; i++) {
+		for (int j = 0; j < maze_y_size + 1; j++) {
+			// Ignore corners
+			// Ignore walls that have a neighbour blocking an open path
+			// so if top wall has bottom neighbour->can't place.
 
-		switch (side) {
-		case 0:
-			x_C = generate_random_number(maze_x_size, 0);
-			y_C = 0;
-			break;
-		case 1:
-			x_C = 0;
-			y_C = generate_random_number(maze_y_size, 0);
-			break;
-		case 2:
-			x_C = generate_random_number(maze_x_size, 0);
-			y_C = maze_y_size;
-			break;
-		case 3:
-			x_C = maze_x_size;
-			y_C = generate_random_number(maze_x_size, 0);
-			break;
-		default:
-			x_C = generate_random_number(maze_x_size, 0);
-			y_C = 0;
+			if (!(i == 0 && j == 0) && !(i == 0 && j == maze_y_size) && !(i == maze_x_size && j == 0) && !(i == maze_x_size && j == maze_y_size)) {
+				// Ignore corners
+				possible_exit_positions.emplace_back(&maze[i][j]);
+			}
 		}
+	}
+	
+	// Check neighbours
+	
+	for (int v = 0; v < possible_exit_positions.size(); v++) {
+		Cell* current_cell = possible_exit_positions.at(v);
 
-		// Make sure the exits are not in the corners otherwise there is no valid path
-		if ((x_C == 0 && y_C == 0) || (x_C == 0 && y_C == maze_y_size)) {
-			if (maze[x_C + 1][y_C].value == 'E') {
-				i -= 1;
-			}
-
-			else {
-				maze[x_C + 1][y_C].value = 'E';
-				exit_vector.emplace_back(create_exit_cell(x_C + 1, y_C));
-			}
-		}		
-
-		else if ((x_C == maze_x_size && y_C == 0) || (x_C == maze_x_size && y_C == maze_y_size)) {
-			if (maze[x_C - 1][y_C].value == 'E') {
-				i -= 1;
-			}
-
-			else {
-				maze[x_C - 1][y_C].value = 'E';
-				exit_vector.emplace_back(create_exit_cell(x_C - 1, y_C));
+		if ((current_cell->x > 0 && current_cell->y == 0)) {
+			if (current_cell->right_neighbour->value == ' ') {
+				confirmed_exit_positions.emplace_back(current_cell);
 			}
 		}
 
-		else {
-			if (maze[x_C][y_C].value == 'E') {
-				i -= 1;
+		else if ((current_cell->x > 0 && current_cell->y == maze_y_size)) {
+			if (current_cell->left_neighbour->value == ' ') {
+				confirmed_exit_positions.emplace_back(current_cell);
 			}
+		}
 
-			else {
-				maze[x_C][y_C].value = 'E';
-				exit_vector.emplace_back(create_exit_cell(x_C, y_C));
+		else if ((current_cell->x == 0 && current_cell->y > 0)) {
+			if (current_cell->down_neighbour->value == ' ') {
+				confirmed_exit_positions.emplace_back(current_cell);
+			}
+		}
+
+		else if ((current_cell->x == maze_x_size && current_cell->y > 0)) {
+			if (current_cell->up_neighbour->value == ' ') {
+				confirmed_exit_positions.emplace_back(current_cell);
 			}
 		}
 
 	}
+
+	for (int k = 0; k < num_exits; k++) {
+		int random_exit = generate_random_number(confirmed_exit_positions.size(), 0);
+		confirmed_exit_positions.at(random_exit)->value = 'E';
+	}
+	
 }
 
 void Maze::place_start(int startx, int starty) {
