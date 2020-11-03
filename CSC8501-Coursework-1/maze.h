@@ -37,6 +37,8 @@ class Maze {
 		void save_maze(Maze* maze, std::string filename);
 		Maze* load_maze(std::string filename);
 
+		void generate_route();
+
 	private:
 		Cell** maze;
 		int maze_x_size = 0;
@@ -44,6 +46,6 @@ class Maze {
 		int num_exits = 1;
 
 		Cell* starting_cell;
-		std::vector<Cell> exit_vector;
+		std::vector<Cell*> exit_vector;
 
 };

@@ -279,6 +279,7 @@ void Maze::place_exit(int num_exits) {
 	for (int k = 0; k < num_exits; k++) {
 		int random_exit = generate_random_number(confirmed_exit_positions.size(), 0);
 		confirmed_exit_positions.at(random_exit)->value = 'E';
+		exit_vector.emplace_back(confirmed_exit_positions.at(random_exit));
 	}
 	
 }
@@ -325,7 +326,7 @@ void Maze::save_maze(Maze* maze, string filename) {
 
 }
 
-Maze* Maze::load_maze(string filename) {
+Maze* Maze::load_maze(string filename) {	
 	ifstream istream;
 
 	istream.open(filename + ".txt");
@@ -334,42 +335,48 @@ Maze* Maze::load_maze(string filename) {
 		cout << "There was an issue opening this file." << endl;
 	}
 
-	string dimensions;
+	else {
+	
+		string dimensions;
 
-	istream >> dimensions;
+		istream >> dimensions;
 
-	int split = dimensions.find('|');
-	int height = stoi(dimensions.substr(0, split));
-	int width = stoi(dimensions.substr(split + 1));
+		int split = dimensions.find('|');
+		int height = stoi(dimensions.substr(0, split));
+		int width = stoi(dimensions.substr(split + 1));
 
-	int exits;
-	istream >> exits;
+		int exits;
+		istream >> exits;
 
-	Maze* new_maze = new Maze(height, width, exits);
+		Maze* new_maze = new Maze(height, width, exits);
 
-	for (int i = 0; i < height; i++) {
-		for (int j = 0; j < width; j++) {
-			char c;
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				char c;
 
-			c = istream.get();
-
-			if (c == '\n') {
 				c = istream.get();
+
+				if (c == '\n') {
+					c = istream.get();
+				}
+
+				new_maze->maze[i][j].value = c;
+
 			}
-
-			new_maze->maze[i][j].value = c;
-			
 		}
+
+		new_maze->print_maze();
+
+		if (!istream) {
+			cout << "There was an issue reading this file. Please check your spelling and try again!" << endl;
+		}
+
+		istream.close();
+
+		return new_maze;
 	}
+	
 
-	new_maze->print_maze();
-
-	if (!istream) {
-		cout << "There was an issue reading this file." << endl;
-	}
-
-	istream.close();
-
-	return new_maze;
+	return nullptr;
 
 }

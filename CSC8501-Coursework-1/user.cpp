@@ -38,12 +38,20 @@ int main() {
 
 		int choice;
 		cout << "-> ";
-		cin >> choice;
+
+		while (!(cin >> choice)) {
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Error: input not of type 'int': please retry" << endl;
+			cout << "->";
+		}		
 
 		int width = 35;
 		int height = 12;
 		int exits = 1;
 		string filename;
+
+		string allowed_characters = "abcdefghijklmnopqrstuvwxyz-";
 
 		Maze* generated_maze = new Maze();
 
@@ -51,17 +59,32 @@ int main() {
 			case 1:
 				// Generate a Maze
 				cout << "How wide do you want the maze to be ? (inputs below 35 will be defaulted): ";
-				cin >> width;
+				while (!(cin >> width)) {
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					cout << "Error: input not of type 'int': please retry" << endl;
+					cout << "->";
+				}
 
 				width < 35 ? width = 35 : width;
 
 				cout << "How high do you want the maze to be ? (inputs below 12 will be defaulted): ";
-				cin >> height;
+				while (!(cin >> height)) {
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					cout << "Error: input not of type 'int': please retry" << endl;
+					cout << "->";
+				}
 
 				height < 12 ? height = 12 : height;
-
+				
 				cout << "How many exits do you want ? (1 or more): ";
-				cin >> exits;
+				while (!(cin >> exits)) {
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					cout << "Error: input not of type 'int': please retry" << endl;
+					cout << "->";
+				}
 
 				exits < 1 ? exits = 1 : exits;
 
@@ -73,12 +96,29 @@ int main() {
 				cout << "(1) Yes " << endl;
 				cout << "(2) No " << endl;
 				cout << "-> ";
-				cin >> save;
+				while (!(cin >> save)) {
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					cout << "Error: input not of type 'int': please retry" << endl;
+					cout << "->";
+				}
 
 				switch (save) {
 					case 1:
-						cout << "Please enter a suitable filename - do not include special characters or spaces: ";
+						cout << "Please enter a suitable filename - do not include special characters or spaces (they will be removed!): ";
 						cin >> filename;
+						for (int i = 0; i < filename.size(); i++) {
+							int found = allowed_characters.find(filename[i]);
+							if (!(found < allowed_characters.size())) {
+								filename.erase(filename.begin() + i);
+								i--; // If we erase something here then we need to decrement i because the size will be reduced by one.
+							}
+						}
+
+						if (filename.empty() == true) {
+							cout << "A unique name will be generated due to lack of characters" << endl;
+							filename = "maze" + to_string(generated_maze->generate_random_number(50000, 0));
+						}
 						filename = maze_user->get_username() + "-" + filename;
 
 						maze_user->save_maze(generated_maze, filename);
@@ -92,6 +132,7 @@ int main() {
 				}
 
 				break;
+
 			case 2:
 				// Load a Previous Maze
 				cout << "Please enter the file name that you wish to load: ";
