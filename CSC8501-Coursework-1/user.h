@@ -7,8 +7,10 @@ class User : public Maze {
 		~User();
 
 		Maze* generate_maze(int height, int width, int exits);
+		Maze* generate_shortest_route(Maze* m);
+		Maze* generate_all_routes(Maze* m);
 		void save_maze(Maze* maze, std::string filename);
-		void load_maze();
+		void load_maze(Maze* maze, std::string filename);
 
 		std::string get_username() { return username; }
 
