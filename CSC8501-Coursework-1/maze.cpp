@@ -310,16 +310,16 @@ void Maze::place_start(int startx, int starty) {
 	starting_cell = &maze[startx][starty];
 }
 
-int Maze::generate_random_number(int upper_limit, int lower_limit) {
-	return(rand() % upper_limit + lower_limit);
-}
-
 Cell Maze::create_exit_cell(int x, int y) {
 	Cell exit_cell;
 	exit_cell.x = x;
 	exit_cell.y = y;
 
 	return exit_cell;
+}
+
+int Maze::generate_random_number(int upper_limit, int lower_limit) {
+	return(rand() % upper_limit + lower_limit);
 }
 
 void Maze::save_maze(Maze* maze, string filename) {

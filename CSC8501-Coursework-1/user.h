@@ -5,7 +5,6 @@
 class User : public Maze {
 	public:
 		User(std::string username);
-		~User();
 
 		Maze* generate_maze(int height, int width, int exits);
 		Maze* generate_shortest_route(Maze* m);

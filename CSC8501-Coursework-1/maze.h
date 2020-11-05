@@ -30,6 +30,7 @@ class Maze{
 		Maze(int dim_x, int dim_y, int num_exits); // Parameterised Constructor where the user can provide the information needed
 		~Maze();
 
+		// Maze initialisation functions
 		void fill_maze();
 		void set_neighbours();
 		void generate_maze(Cell initial);
@@ -38,22 +39,28 @@ class Maze{
 		void generate_maze_centre();
 		void print_maze();
 
+		// Maze helper functions
 		void place_exit(int num_exits);
 		void place_start(int startx, int starty);
 		Cell create_exit_cell(int x, int y);
 		int generate_random_number(int upper_limit, int lower_limit);
 
+		// Save and Load functions
 		void save_maze(Maze* maze, std::string filename);
 		Maze* load_maze(std::string filename);
+
+		// A* Algorithm route generation
 		void generate_route(Node* dest);
-		std::vector<Cell*> generate_travsersible_cells();
 		bool node_is_dest(int x, int y, Node* dest);
 		double calculate_heuristic(int x, int y, Node* dest);
 		void create_path(std::vector<Node*> path, Node* dest, Node* initial);
 
+		// A*  Algorithm helper functions
+		std::vector<Cell*> generate_travsersible_cells();
 		Node* find_closest_exit(std::vector<Cell*> exit_vector);
 		void generate_all_routes(std::vector<Cell*> exit_vector);
 
+		// Used for retrieving the exit vector needed for assisting the User Input
 		std::vector<Cell*> get_exits();
 
 	private:
@@ -66,6 +73,7 @@ class Maze{
 		std::vector<Cell*> exit_vector;
 		std::vector<Cell*> traversible_cells;
 
+		// Vectors for the A* Algorithm
 		std::vector<Node*> open;
 		std::vector<Node*> closed;
 		std::vector<Node*> path;

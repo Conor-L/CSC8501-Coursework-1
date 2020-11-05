@@ -227,4 +227,8 @@ int main() {
 		}
 	}
 
+	// Clean up memory
+	delete maze_user;
+	delete generated_maze;
+
 }
