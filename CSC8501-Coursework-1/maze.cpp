@@ -356,29 +356,8 @@ void Maze::save_maze(Maze* maze, string filename) {
 	ostream_rtf << maze->maze_x_size + 1 << "|" << maze->maze_y_size + 1 << endl;
 	ostream_rtf << maze->num_exits << endl;
 	for (int i = 0; i < (maze->maze_x_size + 1); i++) {
-		for (int j = 0; j < (maze->maze_y_size + 1); j++) {			
-
-			if (maze->maze[i][j].value == 'o') {
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+		for (int j = 0; j < (maze->maze_y_size + 1); j++) {	
 				ostream_rtf << maze->maze[i][j].value;
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-			}
-
-			else if (maze->maze[i][j].value == 'S') {
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-				ostream_rtf << maze->maze[i][j].value;
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-			}
-
-			else if (maze->maze[i][j].value == 'E') {
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
-				ostream_rtf << maze->maze[i][j].value;
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-			}
-
-			else {
-				ostream_rtf << maze->maze[i][j].value;
-			}
 		}
 		ostream_rtf << endl;
 	}
