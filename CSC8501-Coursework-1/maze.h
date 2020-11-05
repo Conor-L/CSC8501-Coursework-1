@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <vector>
 #include <fstream>
 #include <string>
@@ -15,7 +16,15 @@ struct Cell {
 	Cell* right_neighbour = nullptr;
 };
 
-class Maze {	
+struct Node {
+	Cell* current_cell;
+	Node* parent_cell = nullptr;
+	double f = FLT_MAX;
+	double g = FLT_MAX;
+	double h = FLT_MAX;
+};
+
+class Maze{	
 	public:
 		Maze();
 		Maze(int dim_x, int dim_y, int num_exits); // Parameterised Constructor where the user can provide the information needed
@@ -36,8 +45,16 @@ class Maze {
 
 		void save_maze(Maze* maze, std::string filename);
 		Maze* load_maze(std::string filename);
+		void generate_route(Node* dest);
+		std::vector<Cell*> generate_travsersible_cells();
+		bool node_is_dest(int x, int y, Node* dest);
+		double calculate_heuristic(int x, int y, Node* dest);
+		void create_path(std::vector<Node*> path, Node* dest, Node* initial);
 
-		void generate_route();
+		Node* find_closest_exit(std::vector<Cell*> exit_vector);
+		void generate_all_routes(std::vector<Cell*> exit_vector);
+
+		std::vector<Cell*> get_exits();
 
 	private:
 		Cell** maze;
@@ -47,5 +64,10 @@ class Maze {
 
 		Cell* starting_cell;
 		std::vector<Cell*> exit_vector;
+		std::vector<Cell*> traversible_cells;
+
+		std::vector<Node*> open;
+		std::vector<Node*> closed;
+		std::vector<Node*> path;
 
 };

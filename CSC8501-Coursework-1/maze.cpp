@@ -1,7 +1,7 @@
-#include <iostream>
 #include <time.h>
 #include "maze.h"
 #include <stack>
+#include <Windows.h>
 
 using namespace std;
 Maze::Maze() {
@@ -220,7 +220,28 @@ void Maze::generate_maze_centre() {
 void Maze::print_maze() {
 	for (int i = 0; i < (maze_x_size + 1); i++) {
 		for (int j = 0; j < (maze_y_size + 1); j++) {
-			cout << maze[i][j].value;
+			if (maze[i][j].value == 'o') {
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+				cout << maze[i][j].value;
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+			}
+
+			else if (maze[i][j].value == 'E') {
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
+				cout << maze[i][j].value;
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+			}
+
+			else if (maze[i][j].value == 'S') {
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+				cout << maze[i][j].value;
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+			}
+
+			else {
+				cout << maze[i][j].value;
+			}
+			
 		}
 		cout << endl;
 	}
@@ -302,6 +323,7 @@ Cell Maze::create_exit_cell(int x, int y) {
 }
 
 void Maze::save_maze(Maze* maze, string filename) {
+	cout << "A txt file and an rtf file will be generated - the rtf file is readable but the txt file is only meant for the computer." << endl;
 	ofstream ostream;
 
 	ostream.open(filename + ".txt");
@@ -323,6 +345,28 @@ void Maze::save_maze(Maze* maze, string filename) {
 	}
 
 	ostream.close();
+
+	ofstream ostream_rtf;
+
+	ostream_rtf.open(filename + "-rtf.rtf");
+	if (!ostream_rtf) {
+		cout << "There was an issue opening this file." << endl;
+	}
+
+	ostream_rtf << maze->maze_x_size + 1 << "|" << maze->maze_y_size + 1 << endl;
+	ostream_rtf << maze->num_exits << endl;
+	for (int i = 0; i < (maze->maze_x_size + 1); i++) {
+		for (int j = 0; j < (maze->maze_y_size + 1); j++) {
+			ostream_rtf << maze->maze[i][j].value;
+		}
+		ostream_rtf << endl;
+	}
+
+	if (!ostream_rtf) {
+		cout << "There was an issue writing to this file." << endl;
+	}
+
+	ostream_rtf.close();
 
 }
 
@@ -379,4 +423,316 @@ Maze* Maze::load_maze(string filename) {
 
 	return nullptr;
 
+}
+
+void Maze::generate_route(Node* dest) {
+	vector<Cell*> copy_cells = generate_travsersible_cells();
+	Cell* starting_cell = nullptr;
+	for (int i = 0; i < copy_cells.size(); i++) {
+		if (copy_cells.at(i)->value == 'S') {
+			starting_cell = copy_cells.at(i);
+		}
+	}
+	Node* starting_node = new Node; 
+	starting_node->current_cell = starting_cell;
+	starting_node->f = 0;
+	starting_node->g = 0;
+	starting_node->h = 0;
+
+	open.emplace_back(starting_node);
+	path.emplace_back(starting_node);
+
+	bool dest_found = false;
+	bool test = false;
+
+	while (open.empty() != true) {
+		Node* q = new Node;
+		int index_of_q = 0;
+		double lowest_f = 9999;
+		for (int i = 0; i < open.size(); i++) {
+			if (open.at(i)->f < lowest_f) {
+				lowest_f = open.at(i)->f;
+				q = open.at(i);
+				index_of_q = i;
+				
+			}
+		}
+
+		open.erase(open.begin() + index_of_q);
+		closed.emplace_back(q);
+		//print_maze();
+		//q->current_cell->value = 'o';
+
+		double new_g, new_f, new_h;
+
+		// North
+
+		if (q != nullptr && (q->current_cell->up_neighbour != nullptr && q->current_cell->up_neighbour->value != 'X')) {
+			Cell* c = q->current_cell->up_neighbour;
+			Node* n = new Node;
+			n->current_cell = c;
+
+			if (node_is_dest(c->x, c->y, dest) == true) {
+				dest->parent_cell = q;				
+				dest_found = true;
+				path.emplace_back(dest);
+				break;
+			}
+
+			else if (!(find(closed.begin(), closed.end(), n) != closed.end()) || n->parent_cell == nullptr) {
+				new_g = q->g + 1.0;
+				new_h = calculate_heuristic(c->x, c->y, dest);
+				new_f = new_g + new_h;
+
+				for (int i = 0; i < open.size(); i++) {
+					Cell* ct = open.at(i)->current_cell;
+					if (n->current_cell == ct) {
+						test = true;
+						break;
+					}
+
+					else {
+						test = false;
+					}
+				}
+
+				if ((n->f == FLT_MAX || n->f > new_f) && !test) {
+					n->f = new_f;
+					n->g = new_g;
+					n->h = new_h;	
+					n->parent_cell = q;
+
+					open.emplace_back(n);
+					path.emplace_back(n);
+				}
+			}
+		}	
+
+		// South
+
+		if (q != nullptr && (q->current_cell->down_neighbour != nullptr && q->current_cell->down_neighbour->value != 'X')) {
+			Cell* c = q->current_cell->down_neighbour;
+			Node* n = new Node;
+			n->current_cell = c;
+
+			/*for (int i = 0; i < closed.size(); i++) {
+				if (n->current_cell == closed.at(i)->current_cell || n->parent_cell != nullptr) {
+					test = true;
+				}
+
+				else {
+					test = false;
+				}
+			}*/
+
+			if (node_is_dest(c->x, c->y, dest) == true) {
+				dest->parent_cell = q;				
+				dest_found = true;
+				path.emplace_back(dest);
+				break;
+			}
+
+			else if (!(find(closed.begin(), closed.end(), n) != closed.end()) || n->parent_cell == nullptr) {
+				new_g = q->g + 1.0;
+				new_h = calculate_heuristic(c->x, c->y, dest);
+				new_f = new_g + new_h;
+
+				for (int i = 0; i < open.size(); i++) {
+					Cell* ct = open.at(i)->current_cell;
+					if (n->current_cell == ct) {
+						test = true;
+						break;
+					}
+
+					else {
+						test = false;
+					}
+				}
+
+				if ((n->f == FLT_MAX || n->f > new_f) && !test) {
+					n->f = new_f;
+					n->g = new_g;
+					n->h = new_h;
+					n->parent_cell = q;
+
+					open.emplace_back(n);
+					path.emplace_back(n);
+				}
+			}
+		}
+
+		// East
+
+		if (q != nullptr && (q->current_cell->right_neighbour != nullptr && q->current_cell->right_neighbour->value != 'X')) {
+			Cell* c = q->current_cell->right_neighbour;
+			Node* n = new Node;
+			n->current_cell = c;
+
+			if (node_is_dest(c->x, c->y, dest) == true) {
+				dest->parent_cell = q;				
+				dest_found = true;
+				path.emplace_back(dest);
+				break;
+			}
+
+			else if (!(find(closed.begin(), closed.end(), n) != closed.end()) || n->parent_cell == nullptr) {
+				new_g = q->g + 1.0;
+				new_h = calculate_heuristic(c->x, c->y, dest);
+				new_f = new_g + new_h;
+
+				for (int i = 0; i < open.size(); i++) {
+					Cell* ct = open.at(i)->current_cell;
+					if (n->current_cell == ct) {
+						test = true;
+						break;
+					}
+
+					else {
+						test = false;
+					}
+				}
+
+				if ((n->f == FLT_MAX || n->f > new_f) && !test) {
+					n->f = new_f;
+					n->g = new_g;
+					n->h = new_h;
+					n->parent_cell = q;
+
+					open.emplace_back(n);
+					path.emplace_back(n);
+				}
+			}
+		}
+
+		// West
+
+		if (q != nullptr && (q->current_cell->left_neighbour != nullptr && q->current_cell->left_neighbour->value != 'X')) {
+			Cell* c = q->current_cell->left_neighbour;
+			Node* n = new Node;
+			n->current_cell = c;
+
+			if (node_is_dest(c->x, c->y, dest) == true) {
+				dest->parent_cell = q;				
+				dest_found = true;
+				path.emplace_back(dest);
+				break;
+			}
+
+			else if (!(find(closed.begin(), closed.end(), n) != closed.end()) || n->parent_cell == nullptr) {
+				new_g = q->g + 1.0;
+				new_h = calculate_heuristic(c->x, c->y, dest);
+				new_f = new_g + new_h;
+
+				for (int i = 0; i < open.size(); i++) {
+					Cell* ct = open.at(i)->current_cell;
+					if (n->current_cell == ct) {
+						test = true;
+						break;
+					}
+
+					else {
+						test = false;
+					}
+				}
+
+				if ((n->f == FLT_MAX || n->f > new_f) && !test) {
+					n->f = new_f;
+					n->g = new_g;
+					n->h = new_h;
+					n->parent_cell = q;
+
+					open.emplace_back(n);
+					path.emplace_back(n);
+				}
+			}
+		}
+	}
+
+	/*dest->parent_cell->current_cell->value = 'o';
+	dest->parent_cell->parent_cell->current_cell->value = 'o';
+	dest->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';
+	dest->parent_cell->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';
+	dest->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';
+	dest->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';
+	dest->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';
+	dest->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';*/
+	create_path(path, dest, starting_node);
+}
+
+bool Maze::node_is_dest(int x, int y, Node* dest) {
+	if (x == dest->current_cell->x && y == dest->current_cell->y) {
+		return true;
+	}
+	return false;
+}
+
+double Maze::calculate_heuristic(int x, int y, Node* dest) {
+	return ((double)sqrt((x - dest->current_cell->x) * (x - dest->current_cell->x) + (y - dest->current_cell->y) * (y - dest->current_cell->y)));
+}
+
+void Maze::create_path(vector<Node*> path, Node* dest, Node* initial) {
+
+	stack<Node*> complete;
+	Node* current_node = dest;
+	while (!(current_node->current_cell == initial->current_cell)) {
+		complete.push(current_node);
+		for (int i = 0; i < path.size(); i++) {
+			if (current_node->parent_cell->current_cell == path.at(i)->current_cell) {
+				current_node = path.at(i);
+				break;
+			}
+		}
+	}
+
+	complete.push(dest);
+	while (!complete.empty()) {
+		Node* current_pop = complete.top();
+		complete.pop();
+		if (current_pop->current_cell->value == ' ') {			
+			maze[current_pop->current_cell->x][current_pop->current_cell->y].value = 'o';
+		}
+	}
+}
+
+vector<Cell*> Maze::generate_travsersible_cells() {
+	for (int i = 0; i < maze_x_size + 1; i++) {
+		for (int j = 0; j < maze_y_size + 1; j++) {
+			if (maze[i][j].value == ' ' || maze[i][j].value == 'E' || maze[i][j].value == 'S') {
+				traversible_cells.emplace_back(&maze[i][j]);
+			}
+		}
+	}
+	return traversible_cells;
+}
+
+Node* Maze::find_closest_exit(vector<Cell*> exits) {
+	Node* closest_node = new Node;
+
+	for (int i = 0; i < exits.size(); i++) {
+		Node* current_exit = new Node;
+		current_exit->current_cell = exits.at(i);
+
+		double new_h = calculate_heuristic(starting_cell->x, starting_cell->y, current_exit);
+
+		if (new_h < closest_node->h) {
+			closest_node = current_exit;
+		}
+	}
+
+	return closest_node;
+
+}
+
+void Maze::generate_all_routes(vector<Cell*> exits) {
+
+	Node* exit_node = new Node;
+	for (int i = 0; i < exits.size(); i++) {
+		exit_node->current_cell = exits.at(i);
+		generate_route(exit_node);
+	}
+
+}
+
+vector<Cell*> Maze::get_exits() {
+	return exit_vector;
 }

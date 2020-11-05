@@ -1,4 +1,6 @@
 ﻿  user.cpp
-C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\user.cpp(110,25): warning C4018: '<': signed/unsigned mismatch
-C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\user.cpp(112,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\user.cpp(55,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\user.cpp(57,15): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\user.cpp(213,25): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\user.cpp(215,20): warning C4018: '<': signed/unsigned mismatch
   CSC8501 Coursework 1.vcxproj -> C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\Debug\CSC8501 Coursework 1.exe
