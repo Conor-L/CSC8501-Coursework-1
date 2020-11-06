@@ -32,6 +32,7 @@ class Maze{
 
 		// Maze initialisation functions
 		void fill_maze();
+		void set_walls();
 		void set_neighbours();
 		void generate_maze(Cell initial);
 		std::vector<Cell*> get_neighbours(Cell current_cell);
@@ -42,11 +43,11 @@ class Maze{
 		// Maze helper functions
 		void place_exit(int num_exits);
 		void place_start(int startx, int starty);
-		Cell create_exit_cell(int x, int y);
 		int generate_random_number(int upper_limit, int lower_limit);
 
 		// Save and Load functions
 		void save_maze(Maze* maze, std::string filename);
+		void write_file(Maze* m, std::string filename);
 		Maze* load_maze(std::string filename);
 
 		// A* Algorithm route generation

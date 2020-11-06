@@ -1,4 +1,14 @@
-﻿  user.cpp
-C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\user.cpp(44,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\user.cpp(46,15): warning C4018: '<': signed/unsigned mismatch
+﻿  maze.cpp
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(8,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(30,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(257,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(389,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(410,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(445,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(498,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(541,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(584,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(637,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(669,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(687,20): warning C4018: '<': signed/unsigned mismatch
   CSC8501 Coursework 1.vcxproj -> C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\Debug\CSC8501 Coursework 1.exe

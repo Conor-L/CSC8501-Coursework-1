@@ -16,6 +16,7 @@ Maze::Maze() {
 	maze_y_size = 34;
 
 	fill_maze();
+	set_walls();
 	place_start(maze_x_size / 2, maze_y_size / 2);
 	set_neighbours();
 
@@ -37,7 +38,8 @@ Maze::Maze(int dim_x, int dim_y, int num_exits) {
 		maze[i] = new Cell[dim_y];
 	}
 
-	fill_maze();	
+	fill_maze();
+	set_walls();
 	place_start(maze_x_size / 2, maze_y_size / 2);
 
 	set_neighbours();
@@ -64,8 +66,9 @@ void Maze::fill_maze() {
 			
 		}
 	}
+}
 
-	// Make sure the walls are actually registered as walls
+void Maze::set_walls() {
 	for (int i = 0; i < (maze_x_size + 1); i++) {
 		for (int j = 0; j < (maze_y_size + 1); j++) {
 
@@ -76,16 +79,11 @@ void Maze::fill_maze() {
 			else if ((i == 0) || (i == maze_x_size)) {
 				maze[i][j].isWall = true;
 			}
-
 		}
 	}
 }
 
 void Maze::set_neighbours() {
-	// Set the neighours of each Cell
-	// leftmost cells don't have a left neighbour
-	// rightmost cells don't have a right neighbour
-
 	for (int i = 0; i < (maze_x_size + 1); i++) {
 		for (int j = 0; j < (maze_y_size + 1); j++) {
 			if (j == 0 || j != maze_y_size) {
@@ -126,10 +124,10 @@ void Maze::generate_maze(Cell c) {
 		while (!available_neighbours.empty()) {
 			int random = generate_random_number(available_neighbours.size(), 0); 
 			Cell* next_cell = available_neighbours.at(random);
-			// check space
 			if (!check_space(*next_cell)) {
 				path_stack.push(current_cell);
-				next_cell->value = ' '; next_cell->visited = true;
+				next_cell->value = ' ';
+				next_cell->visited = true;
 				path_stack.push(next_cell);
 			}
 			available_neighbours.erase(available_neighbours.begin() + random);
@@ -164,7 +162,7 @@ vector<Cell*> Maze::get_neighbours(Cell current) {
 bool Maze::check_space(Cell check) {
 	int space_count = 0;
 
-	if (check.up_neighbour->visited == true) {
+	if (check.up_neighbour->visited == true || check.up_neighbour->isWall == true) {
 		space_count++;
 	}
 
@@ -191,28 +189,25 @@ bool Maze::check_space(Cell check) {
 }
 
 void Maze::generate_maze_centre() {
-	// Delete a 3 by 3 around the starting cell
 	int startx = starting_cell->x;
 	int starty = starting_cell->y;
 
-	// Top 5 cells
-
 	for (int i = starty - 2; i < starty + 3; i++) {
-		maze[startx - 1][i].value = ' '; maze[startx - 1][i].visited = true;
+		maze[startx - 1][i].value = ' ';
+		maze[startx - 1][i].visited = true;
 	}
 
-	// middle 5 cells
 	for (int i = starty - 2; i < starty + 3; i++) {
 		if (i == starty) {
-			continue; // ignore starting cell
+			continue;
 		}
-
-		maze[startx][i].value = ' '; maze[startx - 1][i].visited = true;
+		maze[startx][i].value = ' '; 
+		maze[startx - 1][i].visited = true;
 	}
 
-	// bottom 5 cells
 	for (int i = starty - 2; i < starty + 3; i++) {
-		maze[startx + 1][i].value = ' '; maze[startx - 1][i].visited = true;
+		maze[startx + 1][i].value = ' '; 
+		maze[startx - 1][i].visited = true;
 	}
 
 }
@@ -222,26 +217,23 @@ void Maze::print_maze() {
 		for (int j = 0; j < (maze_y_size + 1); j++) {
 			if (maze[i][j].value == 'o') {
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
-				cout << maze[i][j].value;
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+				cout << maze[i][j].value;				
 			}
 
 			else if (maze[i][j].value == 'E') {
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
 				cout << maze[i][j].value;
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 			}
 
 			else if (maze[i][j].value == 'S') {
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
 				cout << maze[i][j].value;
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 			}
 
 			else {
 				cout << maze[i][j].value;
 			}
-			
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 		}
 		cout << endl;
 	}
@@ -249,25 +241,19 @@ void Maze::print_maze() {
 }
 
 void Maze::place_exit(int num_exits) {
-	// The exits should be placed somewhere that makes sense after the maze is generated.
-	vector<Cell*> possible_exit_positions; // Before Neighbour Check
-	vector<Cell*> confirmed_exit_positions; // After Neighbour Check
+	vector<Cell*> possible_exit_positions;
+	vector<Cell*> confirmed_exit_positions;
 	
 	for (int i = 0; i < maze_x_size + 1; i++) {
 		for (int j = 0; j < maze_y_size + 1; j++) {
-			// Ignore corners
-			// Ignore walls that have a neighbour blocking an open path
-			// so if top wall has bottom neighbour->can't place.
-
 			if (!(i == 0 && j == 0) && !(i == 0 && j == maze_y_size) && !(i == maze_x_size && j == 0) && !(i == maze_x_size && j == maze_y_size)) {
 				// Ignore corners
 				possible_exit_positions.emplace_back(&maze[i][j]);
 			}
 		}
 	}
-	
-	// Check neighbours
-	
+
+	// Check the wall positions for a clear neighbour slot otherwise Exit will be innaccessible
 	for (int v = 0; v < possible_exit_positions.size(); v++) {
 		Cell* current_cell = possible_exit_positions.at(v);
 
@@ -310,32 +296,33 @@ void Maze::place_start(int startx, int starty) {
 	starting_cell = &maze[startx][starty];
 }
 
-Cell Maze::create_exit_cell(int x, int y) {
-	Cell exit_cell;
-	exit_cell.x = x;
-	exit_cell.y = y;
-
-	return exit_cell;
-}
-
 int Maze::generate_random_number(int upper_limit, int lower_limit) {
 	return(rand() % upper_limit + lower_limit);
 }
 
 void Maze::save_maze(Maze* maze, string filename) {
 	cout << "A txt file and an rtf file will be generated - the rtf file is readable but the txt file is only meant for the computer." << endl;
+	string txt_f = filename + ".txt";
+	string rtf_f = filename + "-rtf.rtf";
+
+	write_file(maze, txt_f);
+	write_file(maze, rtf_f);
+
+}
+
+void Maze::write_file(Maze* m, string f) {
 	ofstream ostream;
 
-	ostream.open(filename + ".txt");
+	ostream.open(f);
 	if (!ostream) {
 		cout << "There was an issue opening this file." << endl;
 	}
 
-	ostream << maze->maze_x_size + 1 << "|" << maze->maze_y_size + 1 << endl;
-	ostream << maze->num_exits << endl;
-	for (int i = 0; i < (maze->maze_x_size + 1); i++) {
-		for (int j = 0; j < (maze->maze_y_size + 1); j++) {
-			ostream << maze->maze[i][j].value;
+	ostream << m->maze_x_size + 1 << "|" << m->maze_y_size + 1 << endl;
+	ostream << m->num_exits << endl;
+	for (int i = 0; i < (m->maze_x_size + 1); i++) {
+		for (int j = 0; j < (m->maze_y_size + 1); j++) {
+			ostream << m->maze[i][j].value;
 		}
 		ostream << endl;
 	}
@@ -345,29 +332,6 @@ void Maze::save_maze(Maze* maze, string filename) {
 	}
 
 	ostream.close();
-
-	ofstream ostream_rtf;
-
-	ostream_rtf.open(filename + "-rtf.rtf");
-	if (!ostream_rtf) {
-		cout << "There was an issue opening this file." << endl;
-	}
-
-	ostream_rtf << maze->maze_x_size + 1 << "|" << maze->maze_y_size + 1 << endl;
-	ostream_rtf << maze->num_exits << endl;
-	for (int i = 0; i < (maze->maze_x_size + 1); i++) {
-		for (int j = 0; j < (maze->maze_y_size + 1); j++) {	
-				ostream_rtf << maze->maze[i][j].value;
-		}
-		ostream_rtf << endl;
-	}
-
-	if (!ostream_rtf) {
-		cout << "There was an issue writing to this file." << endl;
-	}
-
-	ostream_rtf.close();
-
 }
 
 Maze* Maze::load_maze(string filename) {	
@@ -382,7 +346,6 @@ Maze* Maze::load_maze(string filename) {
 	else {
 	
 		string dimensions;
-
 		istream >> dimensions;
 
 		int split = dimensions.find('|');
@@ -397,7 +360,6 @@ Maze* Maze::load_maze(string filename) {
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				char c;
-
 				c = istream.get();
 
 				if (c == '\n') {
@@ -416,13 +378,9 @@ Maze* Maze::load_maze(string filename) {
 		}
 
 		istream.close();
-
 		return new_maze;
 	}
-	
-
 	return nullptr;
-
 }
 
 void Maze::generate_route(Node* dest) {
@@ -460,8 +418,6 @@ void Maze::generate_route(Node* dest) {
 
 		open.erase(open.begin() + index_of_q);
 		closed.emplace_back(q);
-		//print_maze();
-		//q->current_cell->value = 'o';
 
 		double new_g, new_f, new_h;
 
