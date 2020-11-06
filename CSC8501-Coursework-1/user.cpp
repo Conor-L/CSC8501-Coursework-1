@@ -1,4 +1,3 @@
-#include <iostream>
 #include <chrono>
 #include <thread>
 #include "user.h"
@@ -40,91 +39,89 @@ void User::load_maze(Maze* m, string filename) {
 	m->load_maze(filename);
 }
 
+string User::check_string(string s) {	
+
+	for (int i = 0; i < s.size(); i++) {
+		int found = ALLOWED_CHARACTERS.find(s[i]);
+		if (!(found < ALLOWED_CHARACTERS.size())) {
+			s.erase(s.begin() + i);
+			i--; // If we erase something here then we need to decrement i because the size will be reduced by one.
+		}
+	}
+
+	return s;
+}
+
+int User::check_integer_input(int input) {	
+
+	while (!(cin >> input)) {
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		cout << "Error: input not of type 'int': please retry" << endl;
+		cout << "->";
+	}
+	return input;
+}
+
 int main() {
+	User* maze_user = new User("User1");
 	Maze* generated_maze = new Maze();
+	int input = -1;
 
 	int width = 35;
 	int height = 12;
 	int exits = 1;
 	string filename;
 	string username;
-	string allowed_characters = "abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
 	cout << "Enter your username (special characters will be removed!): ";
 	cin >> username;
-	for (int i = 0; i < username.size(); i++) {
-		int found = allowed_characters.find(username[i]);
-		if (!(found < allowed_characters.size())) {
-			username.erase(username.begin() + i);
-			i--; // If we erase something here then we need to decrement i because the size will be reduced by one.
-		}
-	}
+
+	username = maze_user->check_string(username);
 
 	if (username.empty() == true) {
 		cout << "Due to false input username will be set to User1." << endl;
-		username = "User1";
+	}
+	else {
+		maze_user->set_username(username);
 	}
 
-	cout << "Files will be saved under " << username << " followed by the file name you provide." << endl;
-	cout << "Due to screen resolution and route generation time, the maximum width is 150 and the maximum height is 75." << endl;
-	User* maze_user = new User("User1");
+	cout << "Files will be saved under " << maze_user->get_username() << " followed by the file name you provide." << endl;
+	cout << "Due to screen resolution and route generation time, the maximum width is 150 and the maximum height is 75." << endl;	
 
 	bool keep_running = true;
-	int warning_limit = 5000;
 
 	while (keep_running) {
 		cout << "Choose an option using one of the numbers below: " << endl;
 		cout << "(1) Generate a Maze" << endl;
 		cout << "(2) Load a previous Maze" << endl;
 		cout << "(3) Exit the program" << endl;
-
-		int choice;
 		cout << "-> ";
 
-		while (!(cin >> choice)) {
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			cout << "Error: input not of type 'int': please retry" << endl;
-			cout << "->";
-		}		
+		input = maze_user->check_integer_input(input);
 
-		switch (choice) {
+		switch (input) {
 			case 1:
 				// Generate a Maze
-				cout << "How wide do you want the maze to be ? (Min: 35, Max: 150): ";
-				while (!(cin >> width)) {
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Error: input not of type 'int': please retry" << endl;
-					cout << "->";
-				}
+				cout << "How wide do you want the maze to be ? (Min: 35, Max: 200): ";
+				width = maze_user->check_integer_input(input);
 
 				width < 35 ? width = 35 : width;
-				width > 150 ? width = 150 : width;
+				width > 200 ? width = 200 : width;
 
-				cout << "How high do you want the maze to be ? (Min: 12, Max: 75): ";
-				while (!(cin >> height)) {
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Error: input not of type 'int': please retry" << endl;
-					cout << "->";
-				}
+				cout << "How high do you want the maze to be ? (Min: 12, Max: 100): ";
+				height = maze_user->check_integer_input(input);
 
 				height < 12 ? height = 12 : height;
-				height > 75 ? height = 75 : height;
+				height > 100 ? height = 100 : height;
 				
 				cout << "How many exits do you want ? (Min: 1, Sensible: 5~10, Not-So-Sensible: 20+): ";
-				while (!(cin >> exits)) {
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Error: input not of type 'int': please retry" << endl;
-					cout << "->";
-				}
+				exits = maze_user->check_integer_input(input);
 
 				exits < 1 ? exits = 1 : exits;
 				exits > height* width ? exits = 10 : exits;
 
-				if (height * width * exits > 5000) {
+				if (height * width * exits > maze_user->get_warning_limit()) {
 					cout << endl;
 					cout << "- - - - - - - - - - - - - - -" << endl;
 					cout << "WARNING: the dimensions you have provided (width/height/exits) results in a huge coefficient which will result in slow route generation times" << endl;
@@ -139,35 +136,22 @@ int main() {
 				generated_maze = maze_user->generate_maze(height, width, exits);
 
 				cout << "Do you want to generate routes for this maze? " << endl;
-				int route_choice;
-
 				cout << "(1) Yes " << endl;
 				cout << "(2) No " << endl;
 				cout << "-> ";
-				while (!(cin >> route_choice)) {
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Error: input not of type 'int': please retry" << endl;
-					cout << "->";
-				}
 
-				switch (route_choice) {
+				input = maze_user->check_integer_input(input);
+
+				switch (input) {
 					case 1:
 						cout << "Do you want to generate routes to every exit or just to the closest?" << endl;
-						int all_routes;
-
 						cout << "(1) All routes" << endl;
 						cout << "(2) Shortest" << endl;
 						cout << "-> ";
 
-						while (!(cin >> all_routes)) {
-							cin.clear();
-							cin.ignore(numeric_limits<streamsize>::max(), '\n');
-							cout << "Error: input not of type 'int': please retry" << endl;
-							cout << "->";
-						}
+						input = maze_user->check_integer_input(input);
 
-						switch (all_routes) {
+						switch (input) {
 							case 1:
 								// generate all routes
 								generated_maze = maze_user->generate_all_routes(generated_maze);
@@ -194,34 +178,23 @@ int main() {
 				}
 
 				cout << "Do you want to save this maze? " << endl;
-
-				int save;
 				cout << "(1) Yes " << endl;
 				cout << "(2) No " << endl;
 				cout << "-> ";
-				while (!(cin >> save)) {
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Error: input not of type 'int': please retry" << endl;
-					cout << "->";
-				}
 
-				switch (save) {
+				input = maze_user->check_integer_input(input);
+
+				switch (input) {
 					case 1:
 						cout << "Please enter a suitable filename - do not include special characters or spaces (they will be removed!): ";
 						cin >> filename;
-						for (int i = 0; i < filename.size(); i++) {
-							int found = allowed_characters.find(filename[i]);
-							if (!(found < allowed_characters.size())) {
-								filename.erase(filename.begin() + i);
-								i--; // If we erase something here then we need to decrement i because the size will be reduced by one.
-							}
-						}
+						filename = maze_user->check_string(filename);
 
 						if (filename.empty() == true) {
 							cout << "A unique name will be generated due to lack of characters" << endl;
 							filename = "maze" + to_string(generated_maze->generate_random_number(50000, 0));
 						}
+
 						filename = maze_user->get_username() + "-" + filename;
 
 						maze_user->save_maze(generated_maze, filename);
@@ -253,5 +226,9 @@ int main() {
 				break;
 		}
 	}
+
+	// Clean up memory
+	delete maze_user;
+	delete generated_maze;
 
 }
