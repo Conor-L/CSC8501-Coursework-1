@@ -53,6 +53,8 @@ class Maze{
 		// A* Algorithm route generation
 		void generate_route(Node* dest);
 		bool node_is_dest(int x, int y, Node* dest);
+		bool check_closed_list(Node* n);
+		void set_next_node(Node* next_node, Node* q, Cell* c, Node* dest);
 		double calculate_heuristic(int x, int y, Node* dest);
 		void create_path(std::vector<Node*> path, Node* dest, Node* initial);
 

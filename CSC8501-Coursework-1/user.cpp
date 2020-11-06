@@ -103,17 +103,17 @@ int main() {
 		switch (input) {
 			case 1:
 				// Generate a Maze
-				cout << "How wide do you want the maze to be ? (Min: 35, Max: 150): ";
+				cout << "How wide do you want the maze to be ? (Min: 35, Max: 200): ";
 				width = maze_user->check_integer_input(input);
 
 				width < 35 ? width = 35 : width;
-				width > 150 ? width = 150 : width;
+				width > 200 ? width = 200 : width;
 
-				cout << "How high do you want the maze to be ? (Min: 12, Max: 75): ";
+				cout << "How high do you want the maze to be ? (Min: 12, Max: 100): ";
 				height = maze_user->check_integer_input(input);
 
 				height < 12 ? height = 12 : height;
-				height > 75 ? height = 75 : height;
+				height > 100 ? height = 100 : height;
 				
 				cout << "How many exits do you want ? (Min: 1, Sensible: 5~10, Not-So-Sensible: 20+): ";
 				exits = maze_user->check_integer_input(input);

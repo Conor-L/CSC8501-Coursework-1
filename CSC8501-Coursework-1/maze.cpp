@@ -216,12 +216,12 @@ void Maze::print_maze() {
 	for (int i = 0; i < (maze_x_size + 1); i++) {
 		for (int j = 0; j < (maze_y_size + 1); j++) {
 			if (maze[i][j].value == 'o') {
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
 				cout << maze[i][j].value;				
 			}
 
 			else if (maze[i][j].value == 'E') {
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
 				cout << maze[i][j].value;
 			}
 
@@ -384,6 +384,10 @@ Maze* Maze::load_maze(string filename) {
 }
 
 void Maze::generate_route(Node* dest) {
+	closed.clear();
+	open.clear();
+	path.clear();
+
 	vector<Cell*> copy_cells = generate_travsersible_cells();
 	Cell* starting_cell = nullptr;
 	for (int i = 0; i < copy_cells.size(); i++) {
@@ -401,7 +405,6 @@ void Maze::generate_route(Node* dest) {
 	path.emplace_back(starting_node);
 
 	bool dest_found = false;
-	bool test = false;
 
 	while (open.empty() != true) {
 		Node* q = new Node;
@@ -419,8 +422,6 @@ void Maze::generate_route(Node* dest) {
 		open.erase(open.begin() + index_of_q);
 		closed.emplace_back(q);
 
-		double new_g, new_f, new_h;
-
 		// North
 
 		if (q != nullptr && (q->current_cell->up_neighbour != nullptr && q->current_cell->up_neighbour->value != 'X')) {
@@ -435,32 +436,8 @@ void Maze::generate_route(Node* dest) {
 				break;
 			}
 
-			else if (!(find(closed.begin(), closed.end(), n) != closed.end()) || n->parent_cell == nullptr) {
-				new_g = q->g + 1.0;
-				new_h = calculate_heuristic(c->x, c->y, dest);
-				new_f = new_g + new_h;
-
-				for (int i = 0; i < open.size(); i++) {
-					Cell* ct = open.at(i)->current_cell;
-					if (n->current_cell == ct) {
-						test = true;
-						break;
-					}
-
-					else {
-						test = false;
-					}
-				}
-
-				if ((n->f == FLT_MAX || n->f > new_f) && !test) {
-					n->f = new_f;
-					n->g = new_g;
-					n->h = new_h;	
-					n->parent_cell = q;
-
-					open.emplace_back(n);
-					path.emplace_back(n);
-				}
+			else if (!(check_closed_list(n))) {
+				set_next_node(n, q, c, dest);
 			}
 		}	
 
@@ -471,16 +448,6 @@ void Maze::generate_route(Node* dest) {
 			Node* n = new Node;
 			n->current_cell = c;
 
-			/*for (int i = 0; i < closed.size(); i++) {
-				if (n->current_cell == closed.at(i)->current_cell || n->parent_cell != nullptr) {
-					test = true;
-				}
-
-				else {
-					test = false;
-				}
-			}*/
-
 			if (node_is_dest(c->x, c->y, dest) == true) {
 				dest->parent_cell = q;				
 				dest_found = true;
@@ -488,32 +455,8 @@ void Maze::generate_route(Node* dest) {
 				break;
 			}
 
-			else if (!(find(closed.begin(), closed.end(), n) != closed.end()) || n->parent_cell == nullptr) {
-				new_g = q->g + 1.0;
-				new_h = calculate_heuristic(c->x, c->y, dest);
-				new_f = new_g + new_h;
-
-				for (int i = 0; i < open.size(); i++) {
-					Cell* ct = open.at(i)->current_cell;
-					if (n->current_cell == ct) {
-						test = true;
-						break;
-					}
-
-					else {
-						test = false;
-					}
-				}
-
-				if ((n->f == FLT_MAX || n->f > new_f) && !test) {
-					n->f = new_f;
-					n->g = new_g;
-					n->h = new_h;
-					n->parent_cell = q;
-
-					open.emplace_back(n);
-					path.emplace_back(n);
-				}
+			else if (!(check_closed_list(n))) {
+				set_next_node(n, q, c, dest);
 			}
 		}
 
@@ -531,32 +474,8 @@ void Maze::generate_route(Node* dest) {
 				break;
 			}
 
-			else if (!(find(closed.begin(), closed.end(), n) != closed.end()) || n->parent_cell == nullptr) {
-				new_g = q->g + 1.0;
-				new_h = calculate_heuristic(c->x, c->y, dest);
-				new_f = new_g + new_h;
-
-				for (int i = 0; i < open.size(); i++) {
-					Cell* ct = open.at(i)->current_cell;
-					if (n->current_cell == ct) {
-						test = true;
-						break;
-					}
-
-					else {
-						test = false;
-					}
-				}
-
-				if ((n->f == FLT_MAX || n->f > new_f) && !test) {
-					n->f = new_f;
-					n->g = new_g;
-					n->h = new_h;
-					n->parent_cell = q;
-
-					open.emplace_back(n);
-					path.emplace_back(n);
-				}
+			else if (!(check_closed_list(n))) {
+				set_next_node(n, q, c, dest);
 			}
 		}
 
@@ -574,45 +493,59 @@ void Maze::generate_route(Node* dest) {
 				break;
 			}
 
-			else if (!(find(closed.begin(), closed.end(), n) != closed.end()) || n->parent_cell == nullptr) {
-				new_g = q->g + 1.0;
-				new_h = calculate_heuristic(c->x, c->y, dest);
-				new_f = new_g + new_h;
-
-				for (int i = 0; i < open.size(); i++) {
-					Cell* ct = open.at(i)->current_cell;
-					if (n->current_cell == ct) {
-						test = true;
-						break;
-					}
-
-					else {
-						test = false;
-					}
-				}
-
-				if ((n->f == FLT_MAX || n->f > new_f) && !test) {
-					n->f = new_f;
-					n->g = new_g;
-					n->h = new_h;
-					n->parent_cell = q;
-
-					open.emplace_back(n);
-					path.emplace_back(n);
-				}
+			else if (!(check_closed_list(n))) {
+				set_next_node(n, q, c, dest);
 			}
 		}
 	}
-
-	/*dest->parent_cell->current_cell->value = 'o';
-	dest->parent_cell->parent_cell->current_cell->value = 'o';
-	dest->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';
-	dest->parent_cell->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';
-	dest->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';
-	dest->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';
-	dest->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';
-	dest->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->parent_cell->current_cell->value = 'o';*/
 	create_path(path, dest, starting_node);
+}
+
+bool Maze::check_closed_list(Node* n) {
+	bool dupe_check = false;
+	for (int i = 0; i < closed.size(); i++) {
+		Cell* ct = closed.at(i)->current_cell;
+		if (n->current_cell == ct) {
+			dupe_check = true;
+			return dupe_check;
+		}
+
+		else {
+			dupe_check = false;
+		}
+	}
+	return dupe_check;
+}
+
+void Maze::set_next_node(Node* next_node, Node* q, Cell* c, Node* dest) {
+	double new_g, new_f, new_h;
+	bool dupe_check = false;
+
+	new_g = q->g + 1.0;
+	new_h = calculate_heuristic(c->x, c->y, dest);
+	new_f = new_g + new_h;
+
+	for (int i = 0; i < open.size(); i++) {
+		Cell* ct = open.at(i)->current_cell;
+		if (next_node->current_cell == ct) {
+			dupe_check = true;
+			break;
+		}
+
+		else {
+			dupe_check = false;
+		}
+	}
+
+	if ((next_node->f == FLT_MAX || next_node->f > new_f) && !dupe_check) {
+		next_node->f = new_f;
+		next_node->g = new_g;
+		next_node->h = new_h;
+		next_node->parent_cell = q;
+
+		open.emplace_back(next_node);
+		path.emplace_back(next_node);
+	}
 }
 
 bool Maze::node_is_dest(int x, int y, Node* dest) {
@@ -623,7 +556,7 @@ bool Maze::node_is_dest(int x, int y, Node* dest) {
 }
 
 double Maze::calculate_heuristic(int x, int y, Node* dest) {
-	return ((double)sqrt((x - dest->current_cell->x) * (x - dest->current_cell->x) + (y - dest->current_cell->y) * (y - dest->current_cell->y)));
+	return ((double)sqrt(pow((x - dest->current_cell->x), 2) + pow((y - dest->current_cell->y), 2)));
 }
 
 void Maze::create_path(vector<Node*> path, Node* dest, Node* initial) {
@@ -644,7 +577,8 @@ void Maze::create_path(vector<Node*> path, Node* dest, Node* initial) {
 	while (!complete.empty()) {
 		Node* current_pop = complete.top();
 		complete.pop();
-		if (current_pop->current_cell->value == ' ') {			
+		if (current_pop->current_cell->value == ' ' || current_pop->current_cell->value == 'o') {
+			// Checking if a node is already 'o' is necessary if you are generating loads of exits.
 			maze[current_pop->current_cell->x][current_pop->current_cell->y].value = 'o';
 		}
 	}
