@@ -129,7 +129,7 @@ void Maze::generate_maze(Cell c) {
 		}
 
 		while (!available_neighbours.empty()) {
-			int random = generate_random_number(available_neighbours.size(), 0); 
+			int random = generate_random_number(available_neighbours.size() - 1, 0); 
 			Cell* next_cell = available_neighbours.at(random);
 			if (!check_space(*next_cell)) {
 				path_stack.push(current_cell);
@@ -304,7 +304,7 @@ void Maze::place_start(int startx, int starty) {
 }
 
 int Maze::generate_random_number(int upper_limit, int lower_limit) {
-	return(rand() % upper_limit + lower_limit);
+	return lower_limit + (rand() % (upper_limit - lower_limit + 1));
 }
 
 void Maze::save_maze(Maze* maze, string filename) {
@@ -467,13 +467,6 @@ void Maze::generate_route(Node* dest) {
 	open.clear();
 	path.clear();
 
-	vector<Cell*> copy_cells = generate_travsersible_cells();
-	Cell* starting_cell = nullptr;
-	for (int i = 0; i < copy_cells.size(); i++) {
-		if (copy_cells.at(i)->value == 'S') {
-			starting_cell = copy_cells.at(i);
-		}
-	}
 	Node* starting_node = new Node; 
 	starting_node->current_cell = starting_cell;
 	starting_node->f = 0;
@@ -661,17 +654,6 @@ void Maze::create_path(vector<Node*> path, Node* dest, Node* initial) {
 			maze[current_pop->current_cell->x][current_pop->current_cell->y].value = 'o';
 		}
 	}
-}
-
-vector<Cell*> Maze::generate_travsersible_cells() {
-	for (int i = 0; i < maze_x_size + 1; i++) {
-		for (int j = 0; j < maze_y_size + 1; j++) {
-			if (maze[i][j].value == ' ' || maze[i][j].value == 'E' || maze[i][j].value == 'S') {
-				traversible_cells.emplace_back(&maze[i][j]);
-			}
-		}
-	}
-	return traversible_cells;
 }
 
 Node* Maze::find_closest_exit(vector<Cell*> exits) {

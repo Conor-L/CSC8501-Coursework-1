@@ -68,9 +68,9 @@ int main() {
 	Maze* generated_maze = new Maze();
 	int input = -1;
 
-	int width = 35;
-	int height = 12;
-	int exits = 1;
+	int width = maze_user->get_width_lower();
+	int height = maze_user->get_height_lower();
+	int exits = maze_user->get_exit_lower();
 	string filename;
 	string username;
 
@@ -106,20 +106,20 @@ int main() {
 				cout << "How wide do you want the maze to be ? (Min: 35, Max: 200): ";
 				width = maze_user->check_integer_input(input);
 
-				width < 35 ? width = 35 : width;
-				width > 200 ? width = 200 : width;
+				width < maze_user->get_width_lower() ? width = maze_user->get_width_lower() : width;
+				width > maze_user->get_width_upper() ? width = maze_user->get_width_upper() : width;
 
 				cout << "How high do you want the maze to be ? (Min: 12, Max: 100): ";
 				height = maze_user->check_integer_input(input);
 
-				height < 12 ? height = 12 : height;
-				height > 100 ? height = 100 : height;
+				height < maze_user->get_height_lower() ? height = maze_user->get_height_lower() : height;
+				height > maze_user->get_height_upper() ? height = maze_user->get_height_upper() : height;
 				
 				cout << "How many exits do you want ? (Min: 1, Sensible: 5~10, Not-So-Sensible: 20+): ";
 				exits = maze_user->check_integer_input(input);
 
-				exits < 1 ? exits = 1 : exits;
-				exits > height* width ? exits = 10 : exits;
+				exits < maze_user->get_exit_lower() ? exits = maze_user->get_exit_lower() : exits;
+				exits > maze_user->get_exit_upper() ? exits = 10 : exits;
 
 				if (height * width * exits > maze_user->get_warning_limit()) {
 					cout << endl;

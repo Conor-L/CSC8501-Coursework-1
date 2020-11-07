@@ -4,12 +4,10 @@ C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.c
 C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(264,20): warning C4018: '<': signed/unsigned mismatch
 C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(366,20): warning C4018: '<': signed/unsigned mismatch
 C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(388,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(472,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(492,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(585,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(607,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(647,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(485,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(578,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(600,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(640,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(662,20): warning C4018: '<': signed/unsigned mismatch
 C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(680,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\maze.cpp(698,20): warning C4018: '<': signed/unsigned mismatch
-  LINK : C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\Debug\CSC8501 Coursework 1.exe not found or not built by the last incremental link; performing full link
   CSC8501 Coursework 1.vcxproj -> C:\Users\lambe\Documents\GitHub\CSC8501-Coursework-1\CSC8501-Coursework-1\Debug\CSC8501 Coursework 1.exe

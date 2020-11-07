@@ -59,7 +59,6 @@ class Maze{
 		void create_path(std::vector<Node*> path, Node* dest, Node* initial);
 
 		// A*  Algorithm helper functions
-		std::vector<Cell*> generate_travsersible_cells();
 		Node* find_closest_exit(std::vector<Cell*> exit_vector);
 		void generate_all_routes(std::vector<Cell*> exit_vector);
 

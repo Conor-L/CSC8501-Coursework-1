@@ -20,8 +20,24 @@ class User : public Maze {
 
 		int get_warning_limit() { return WRN_LIMIT; }
 
+		int get_height_lower() { return height_lower; }
+		int get_width_lower() { return width_lower; }
+		int get_exit_lower() { return exit_lower; }
+
+		int get_height_upper() { return height_upper; }
+		int get_width_upper() { return width_upper; }
+		int get_exit_upper() { return exit_upper; }
+
 	private:
 		std::string username;
 		std::string const ALLOWED_CHARACTERS = "abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		int const WRN_LIMIT = 5000;
+
+		int height_lower = 12;
+		int width_lower = 35;
+		int exit_lower = 1;
+
+		int height_upper = 100;
+		int width_upper = 200;
+		int exit_upper = (height_upper * width_upper) - 4;
 };
