@@ -87,7 +87,7 @@ int main() {
 	}
 
 	cout << "Files will be saved under " << maze_user->get_username() << " followed by the file name you provide." << endl;
-	cout << "Due to screen resolution and route generation time, the maximum width is 150 and the maximum height is 75." << endl;	
+	cout << "Due to screen resolution and route generation time, the maximum width is 200 and the maximum height is 100." << endl;	
 
 	bool keep_running = true;
 

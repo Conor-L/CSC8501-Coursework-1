@@ -1,3 +1,10 @@
+/*
+
+	The entire project is available on my github at: https://github.com/Conor-L/CSC8501-Coursework-1
+	
+*/
+
+
 #include <time.h>
 #include "maze.h"
 #include <stack>
@@ -340,27 +347,80 @@ Maze* Maze::load_maze(string filename) {
 	istream.open(filename + ".txt");
 
 	if (!istream) {
-		cout << "There was an issue opening this file." << endl;
+		cout << "There was an issue opening this file: File does not exist." << endl;
 	}
 
 	else {
-	
+
+		int search_valid;
+		int exit_counter = 0;
+		int split = -1;
+		int height = -1;
+		int width = -1;
+
 		string dimensions;
 		istream >> dimensions;
 
-		int split = dimensions.find('|');
-		int height = stoi(dimensions.substr(0, split));
-		int width = stoi(dimensions.substr(split + 1));
+		search_valid = dimensions.find('|');
 
+		if (search_valid < dimensions.size()) {
+			split = dimensions.find('|');
+			height = stoi(dimensions.substr(0, split));
+			width = stoi(dimensions.substr(split + 1));
+		}
+
+		else {
+			cout << "-Error:" << endl;
+			cout << "The file that you have attempted to load a maze does not contain maze dimensions." << endl;
+			cout << "You can fix this by adding the dimensions to the file yourself:" << endl;
+			cout << "To add the dimensions, load the file and type <dim_x>|<dim_y> on the first line and press enter; where <dim_x> and <dim_y> are the height and width." << endl;
+			cout << "For example: 12|35" << endl;
+			cout << "- - - - - - - - - - - - - -" << endl;
+			return nullptr;
+		}
+
+		string exits_s;
 		int exits;
-		istream >> exits;
+		istream >> exits_s;
 
-		Maze* new_maze = new Maze(height, width, exits);
+		search_valid = exits_s.find('X');
+
+		if (search_valid < exits_s.size()) {
+			cout << "-Error:" << endl;
+			cout << "The file that you have attempted to load a maze does not contain maze exits." << endl;
+			cout << "You can fix this by adding the exits to the file yourself:" << endl;
+			cout << "To add the exits, load the file and type the number of exits on the second line and press enter." << endl;
+			cout << "- - - - - - - - - - - - - -" << endl;
+			return nullptr;
+		}
+
+		else {
+			exits = stoi(exits_s);
+		}
+
+		Maze* new_maze = nullptr;
+
+		try {
+			new_maze = new Maze(height, width, exits);
+		}
+		catch (const std::bad_array_new_length e) {
+			cout << "- - - - - - - - - " << endl;
+			cout << "An exception has occured attempting to generate your maze: " << e.what() << endl;
+			cout << "Check: " << endl;
+			cout << "(1) The dimensions that you have entered are actually correct." << endl;
+			cout << "(2) The number of exits that you have entered are actually correct." << endl;
+			cout << "- - - - - - - - - " << endl;
+			return nullptr;
+		}
 
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				char c;
 				c = istream.get();
+
+				if (c == 'E') {
+					exit_counter++;
+				}
 
 				if (c == '\n') {
 					c = istream.get();
@@ -371,9 +431,28 @@ Maze* Maze::load_maze(string filename) {
 			}
 		}
 
+		char eof;
+		istream >> eof; // This will get the file end character after the for loop
+
+		if (istream.eof() == 0) {
+			cout << "- - - - - - - - - " << endl;
+			cout << "There was an issue reading this file: end of file not reached." << endl;
+			cout << "Check the maze dimensions and make sure that they correct in order to read whole file." << endl;
+			cout << "- - - - - - - - - " << endl;
+			return nullptr;
+		}
+
+		if (exit_counter != exits) {
+			cout << "- - - - - - - - - " << endl;
+			cout << "There was an issue reading this file: exits inconsistent." << endl;
+			cout << "Check the maze exit dimension to make sure it is correct (it should equal how many exits actually exist)." << endl;
+			cout << "- - - - - - - - - " << endl;
+			return nullptr;
+		}
+
 		new_maze->print_maze();
 
-		if (!istream) {
+		if (!istream && (istream.eof() == 0)) {
 			cout << "There was an issue reading this file. Please check your spelling and try again!" << endl;
 		}
 
