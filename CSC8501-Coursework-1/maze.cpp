@@ -14,10 +14,7 @@ using namespace std;
 Maze::Maze() {
 	srand(time(NULL));
 
-	maze = new Cell*[12];
-	for (int i = 0; i < 12; i++) {
-		maze[i] = new Cell[35];
-	}
+	maze = new Cell[(12 * 35)];
 
 	maze_x_size = 11;
 	maze_y_size = 34;
@@ -40,10 +37,7 @@ Maze::Maze(int dim_x, int dim_y, int num_exits) {
 	maze_y_size = dim_y - 1;
 	this->num_exits = num_exits;
 
-	maze = new Cell*[dim_x];
-	for (int i = 0; i < dim_x; i++) {
-		maze[i] = new Cell[dim_y];
-	}
+	maze = new Cell[dim_x * dim_y];
 
 	fill_maze();
 	set_walls();
@@ -58,18 +52,15 @@ Maze::Maze(int dim_x, int dim_y, int num_exits) {
 	
 Maze::~Maze() {
 	// Clean up
-	for (int i = 0; i < maze_x_size + 1; i++) {
-		delete[] maze[i];
-	}
 	delete[] maze;
 }
 
 void Maze::fill_maze() {
 	for (int i = 0; i < (maze_x_size + 1); i++) {
 		for (int j = 0; j < (maze_y_size + 1); j++) {
-			maze[i][j].value = 'X';
-			maze[i][j].x = i;
-			maze[i][j].y = j;
+			maze[get_array_index(i, j)].value = 'X';
+			maze[get_array_index(i, j)].x = i;
+			maze[get_array_index(i, j)].y = j;
 			
 		}
 	}
@@ -80,11 +71,11 @@ void Maze::set_walls() {
 		for (int j = 0; j < (maze_y_size + 1); j++) {
 
 			if ((j == 0) || (j == maze_y_size)) {
-				maze[i][j].isWall = true;
+				maze[get_array_index(i, j)].isWall = true;
 			}
 
 			else if ((i == 0) || (i == maze_x_size)) {
-				maze[i][j].isWall = true;
+				maze[get_array_index(i, j)].isWall = true;
 			}
 		}
 	}
@@ -94,31 +85,31 @@ void Maze::set_neighbours() {
 	for (int i = 0; i < (maze_x_size + 1); i++) {
 		for (int j = 0; j < (maze_y_size + 1); j++) {
 			if (j == 0 || j != maze_y_size) {
-				maze[i][j].right_neighbour = &maze[i][j + 1];
+				maze[get_array_index(i, j)].right_neighbour = &maze[get_array_index(i, j + 1)];
 			}
 
 			if (j != 0) {
-				maze[i][j].left_neighbour = &maze[i][j - 1];
+				maze[get_array_index(i, j)].left_neighbour = &maze[get_array_index(i, j - 1)];
 			}
 
 			if (i == 0 || i != maze_x_size) {
-				maze[i][j].down_neighbour = &maze[i + 1][j];
+				maze[get_array_index(i, j)].down_neighbour = &maze[get_array_index(i + 1, j)];
 			}
 
 			if (i != 0) {
-				maze[i][j].up_neighbour = &maze[i - 1][j];
+				maze[get_array_index(i, j)].up_neighbour = &maze[get_array_index(i - 1, j)];
 			}
 		}
 	}
 }
 
 void Maze::generate_maze(Cell c) {
-	Cell* initial_cell = &maze[c.x][c.y];
+	Cell* initial_cell = &maze[get_array_index(c.x, c.y)];
 	stack<Cell*> path_stack;
 
 	initial_cell->visited = true;
 	path_stack.push(initial_cell);
-	
+
 	while (!path_stack.empty()) {
 		Cell* current_cell = path_stack.top();
 		path_stack.pop();
@@ -129,7 +120,7 @@ void Maze::generate_maze(Cell c) {
 		}
 
 		while (!available_neighbours.empty()) {
-			int random = generate_random_number(available_neighbours.size() - 1, 0); 
+			int random = generate_random_number(available_neighbours.size() - 1, 0);
 			Cell* next_cell = available_neighbours.at(random);
 			if (!check_space(*next_cell)) {
 				path_stack.push(current_cell);
@@ -146,20 +137,20 @@ void Maze::generate_maze(Cell c) {
 vector<Cell*> Maze::get_neighbours(Cell current) {
 	vector<Cell*> available_neighbours;
 	
-	if ((current.up_neighbour->visited == false) && (current.up_neighbour->isWall == false)) {
-		available_neighbours.emplace_back(maze[current.x][current.y].up_neighbour);
+	if (!(current.up_neighbour == nullptr) && (current.up_neighbour->visited == false) && (current.up_neighbour->isWall == false)) {
+		available_neighbours.emplace_back(maze[get_array_index(current.x, current.y)].up_neighbour);
 	}
 	
-	if ((current.down_neighbour->visited == false) && (current.down_neighbour->isWall == false)) {
-		available_neighbours.emplace_back(maze[current.x][current.y].down_neighbour);
+	if (!(current.down_neighbour == nullptr) && (current.down_neighbour->visited == false) && (current.down_neighbour->isWall == false)) {
+		available_neighbours.emplace_back(maze[get_array_index(current.x, current.y)].down_neighbour);
 	}
 
-	if ((current.right_neighbour->visited == false) && (current.right_neighbour->isWall == false)) {
-		available_neighbours.emplace_back(maze[current.x][current.y].right_neighbour);
+	if (!(current.right_neighbour == nullptr) && (current.right_neighbour->visited == false) && (current.right_neighbour->isWall == false)) {
+		available_neighbours.emplace_back(maze[get_array_index(current.x, current.y)].right_neighbour);
 	}
 	
-	if ((current.left_neighbour->visited == false) && (current.left_neighbour->isWall == false)) {
-		available_neighbours.emplace_back(maze[current.x][current.y].left_neighbour);
+	if (!(current.left_neighbour == nullptr) && (current.left_neighbour->visited == false) && (current.left_neighbour->isWall == false)) {
+		available_neighbours.emplace_back(maze[get_array_index(current.x, current.y)].left_neighbour);
 	}
 	
 	return available_neighbours;
@@ -200,21 +191,21 @@ void Maze::generate_maze_centre() {
 	int starty = starting_cell->y;
 
 	for (int i = starty - 2; i < starty + 3; i++) {
-		maze[startx - 1][i].value = ' ';
-		maze[startx - 1][i].visited = true;
+		maze[get_array_index(startx - 1, i)].value = ' ';
+		maze[get_array_index(startx - 1, i)].visited = true;
 	}
 
 	for (int i = starty - 2; i < starty + 3; i++) {
 		if (i == starty) {
 			continue;
 		}
-		maze[startx][i].value = ' '; 
-		maze[startx - 1][i].visited = true;
+		maze[get_array_index(startx, i)].value = ' ';
+		maze[get_array_index(startx - 1, i)].visited = true;
 	}
 
 	for (int i = starty - 2; i < starty + 3; i++) {
-		maze[startx + 1][i].value = ' '; 
-		maze[startx - 1][i].visited = true;
+		maze[get_array_index(startx + 1, i)].value = ' ';
+		maze[get_array_index(startx - 1, i)].visited = true;
 	}
 
 }
@@ -222,23 +213,23 @@ void Maze::generate_maze_centre() {
 void Maze::print_maze() {
 	for (int i = 0; i < (maze_x_size + 1); i++) {
 		for (int j = 0; j < (maze_y_size + 1); j++) {
-			if (maze[i][j].value == 'o') {
+			if (maze[get_array_index(i, j)].value == 'o') {
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
-				cout << maze[i][j].value;				
+				cout << maze[get_array_index(i, j)].value;
 			}
 
-			else if (maze[i][j].value == 'E') {
+			else if (maze[get_array_index(i, j)].value == 'E') {
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-				cout << maze[i][j].value;
+				cout << maze[get_array_index(i, j)].value;
 			}
 
-			else if (maze[i][j].value == 'S') {
+			else if (maze[get_array_index(i, j)].value == 'S') {
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-				cout << maze[i][j].value;
+				cout << maze[get_array_index(i, j)].value;
 			}
 
 			else {
-				cout << maze[i][j].value;
+				cout << maze[get_array_index(i, j)].value;
 			}
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 		}
@@ -255,7 +246,7 @@ void Maze::place_exit(int num_exits) {
 		for (int j = 0; j < maze_y_size + 1; j++) {
 			if (!(i == 0 && j == 0) && !(i == 0 && j == maze_y_size) && !(i == maze_x_size && j == 0) && !(i == maze_x_size && j == maze_y_size)) {
 				// Ignore corners
-				possible_exit_positions.emplace_back(&maze[i][j]);
+				possible_exit_positions.emplace_back(&maze[get_array_index(i, j)]);
 			}
 		}
 	}
@@ -299,8 +290,8 @@ void Maze::place_exit(int num_exits) {
 }
 
 void Maze::place_start(int startx, int starty) {
-	maze[startx][starty].value = 'S';
-	starting_cell = &maze[startx][starty];
+	maze[get_array_index(startx, starty)].value = 'S';
+	starting_cell = &maze[get_array_index(startx, starty)];
 }
 
 int Maze::generate_random_number(int upper_limit, int lower_limit) {
@@ -329,7 +320,7 @@ void Maze::write_file(Maze* m, string f) {
 	ostream << m->num_exits << endl;
 	for (int i = 0; i < (m->maze_x_size + 1); i++) {
 		for (int j = 0; j < (m->maze_y_size + 1); j++) {
-			ostream << m->maze[i][j].value;
+			ostream << m->maze[get_array_index(i, j)].value;
 		}
 		ostream << endl;
 	}
@@ -426,7 +417,7 @@ Maze* Maze::load_maze(string filename) {
 					c = istream.get();
 				}
 
-				new_maze->maze[i][j].value = c;
+				new_maze->maze[get_array_index(i, j)].value = c;
 
 			}
 		}
@@ -651,7 +642,7 @@ void Maze::create_path(vector<Node*> path, Node* dest, Node* initial) {
 		complete.pop();
 		if (current_pop->current_cell->value == ' ' || current_pop->current_cell->value == 'o') {
 			// Checking if a node is already 'o' is necessary if you are generating loads of exits.
-			maze[current_pop->current_cell->x][current_pop->current_cell->y].value = 'o';
+			maze[get_array_index(current_pop->current_cell->x, current_pop->current_cell->y)].value = 'o';
 		}
 	}
 }

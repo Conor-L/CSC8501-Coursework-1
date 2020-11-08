@@ -65,8 +65,11 @@ class Maze{
 		// Used for retrieving the exit vector needed for assisting the User Input
 		std::vector<Cell*> get_exits();
 
+		// Get the array index
+		int get_array_index(int x, int y) { return y + (maze_y_size + 1) * x; }
+
 	private:
-		Cell** maze;
+		Cell* maze;
 		int maze_x_size = 0;
 		int maze_y_size = 0;
 		int num_exits = 1;
