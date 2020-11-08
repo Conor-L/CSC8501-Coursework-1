@@ -232,3 +232,12 @@ int main() {
 	delete generated_maze;
 
 }
+
+std::string User::get_username() { return username; }
+int User::get_warning_limit() { return WRN_LIMIT; }
+int User::get_height_lower() { return height_lower; }
+int User::get_width_lower() { return width_lower; }
+int User::get_exit_lower() { return exit_lower; }
+int User::get_height_upper() { return height_upper; }
+int User::get_width_upper() { return width_upper; }
+int User::get_exit_upper() { return exit_upper; }

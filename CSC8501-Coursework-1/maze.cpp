@@ -678,3 +678,7 @@ void Maze::generate_all_routes(vector<Cell*> exits) {
 vector<Cell*> Maze::get_exits() {
 	return exit_vector;
 }
+
+int Maze::get_array_index(int x, int y) { 
+	return y + (maze_y_size + 1) * x; 
+}
