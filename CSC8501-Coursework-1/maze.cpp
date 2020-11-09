@@ -485,8 +485,7 @@ void Maze::generate_route(Node* dest) {
 		open.erase(open.begin() + index_of_q);
 		closed.emplace_back(q);
 
-		// North
-
+		// Up
 		if (q != nullptr && (q->current_cell->up_neighbour != nullptr && q->current_cell->up_neighbour->value != 'X')) {
 			Cell* c = q->current_cell->up_neighbour;
 			Node* n = new Node;
@@ -504,8 +503,7 @@ void Maze::generate_route(Node* dest) {
 			}
 		}	
 
-		// South
-
+		// Down
 		if (q != nullptr && (q->current_cell->down_neighbour != nullptr && q->current_cell->down_neighbour->value != 'X')) {
 			Cell* c = q->current_cell->down_neighbour;
 			Node* n = new Node;
@@ -523,8 +521,7 @@ void Maze::generate_route(Node* dest) {
 			}
 		}
 
-		// East
-
+		// Right
 		if (q != nullptr && (q->current_cell->right_neighbour != nullptr && q->current_cell->right_neighbour->value != 'X')) {
 			Cell* c = q->current_cell->right_neighbour;
 			Node* n = new Node;
@@ -542,8 +539,7 @@ void Maze::generate_route(Node* dest) {
 			}
 		}
 
-		// West
-
+		// Left
 		if (q != nullptr && (q->current_cell->left_neighbour != nullptr && q->current_cell->left_neighbour->value != 'X')) {
 			Cell* c = q->current_cell->left_neighbour;
 			Node* n = new Node;
